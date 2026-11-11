@@ -134,6 +134,7 @@
             font-size: 2.2rem;
             display: block;
             margin-top: 8px;
+            line-height: 1.1;
             letter-spacing: 1px;
         }
 
@@ -141,6 +142,7 @@
         .error-hint { color: var(--color-error-hint); font-weight: 300; }
         .extra-anfitriona { color: var(--color-acento); font-size: 14px; font-weight: 600; display: block; margin-top: 2px; }
         .aviso-ninos { color: var(--color-aviso); font-size: 20px; font-weight: 600; display: block; margin-top: 5px; }
+        .table-name { color: var(--color-acento); font-size: 16px; font-weight: 400; font-style: italic; display: block; margin-top: 2px; letter-spacing: 0.5px;}
 
         .mapa-contenedor {
             margin-top: 25px;
@@ -196,7 +198,7 @@
 <body>
 
 <div class="tarjeta">
-    <h1 id="tituloEvento">XV's Sophia</h1>
+    <h1 id="tituloEvento">Jazz & Rodrigo</h1>
     <p id="subtitulo" class="instrucciones">Ingresa tu nombre y apellido para conocer tu mesa:</p>
 
     <div id="inputBlock" class="input-contenedor">
@@ -327,6 +329,7 @@
             const datosMensaje = {
                 nombre: encontrado.name,
                 mesa: encontrado.table,
+                tableName: encontrado.tableName || '',
                 extraAnfitriona: t.extraAnfitriona,
                 avisoNinos: t.avisoNinos,
             };
@@ -336,9 +339,17 @@
                 .map(normalizarTexto)
                 .includes(normalizarTexto(encontrado.name));
 
+            // Detecta si la mesa es solo números (ej: "1", "42")
+            const mesaEsNumero = /^\d+$/.test(encontrado.table);
+
             if (esAnfitrion) {
                 subtitulo.innerText = t.bienvenidaAnfitriona;
-                selectorResultado.innerHTML = rellenar(t.mensajeAnfitriona, datosMensaje);
+                // Si la mesa es número, usa el template sin "de"
+                if (mesaEsNumero) {
+                    selectorResultado.innerHTML = rellenar(t.mensajeAnfitrionaNumero, datosMensaje);
+                } else {
+                    selectorResultado.innerHTML = rellenar(t.mensajeAnfitriona, datosMensaje);
+                }
                 mostrarCroquis(encontrado.table);
             } else if (mesasNinos.includes(nombreMesa)) {
                 selectorResultado.innerHTML = rellenar(t.mensajeNinos, datosMensaje);
